@@ -14,6 +14,7 @@ class StarGame extends StatefulWidget {
 enum Direction { up, down, left, right }
 
 class _StarGameState extends State<StarGame> {
+  Timer? _timer;
   int row = 20, coulmn = 20;
   List<int> borderList = [];
   List<int> snakePostion = [];
@@ -34,7 +35,7 @@ class _StarGameState extends State<StarGame> {
     direction = Direction.down;
     snakePostion = [45, 44, 43];
     snakeHead = snakePostion.first;
-    Timer.periodic(
+    _timer = Timer.periodic(
       const Duration(milliseconds: 500),
       (timer) {
         updateSnake();
@@ -159,6 +160,13 @@ class _StarGameState extends State<StarGame> {
     }
 
     snakeHead = snakePostion.first;
+  }
+
+  @override
+  void dispose() {
+    startGame();
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

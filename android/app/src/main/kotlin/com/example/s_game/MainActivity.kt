@@ -1,50 +1,36 @@
 package com.example.s_game
 
+import android.content.Context
 import android.media.AudioManager
-import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity() {
+class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.example.s_game/volume_brightness"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun configureFlutterEngine(flutterEngine: io.flutter.embedding.engine.FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
             when (call.method) {
                 "increaseVolume" -> {
-                    increaseVolume()
-                    result.success("Volume Increased")
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
+                    result.success(null)
                 }
                 "decreaseVolume" -> {
-                    decreaseVolume()
-                    result.success("Volume Decreased")
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
+                    result.success(null)
                 }
-                "setVolume" -> {
-                    val volume = call.argument<Double>("volume")?.toFloat() ?: 0f
-                    setVolume(volume)
-                    result.success("Volume set to $volume")
+                "getCurrentVolume" -> {
+                    val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                    val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                    val volumePercentage = currentVolume / maxVolume.toDouble()
+                    result.success(volumePercentage)
                 }
                 else -> result.notImplemented()
             }
         }
-    }
-
-    private fun increaseVolume() {
-        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND)
-    }
-
-    private fun decreaseVolume() {
-        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND)
-    }
-
-    private fun setVolume(volume: Float) {
-        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val newVolume = (volume * maxVolume).toInt()
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
     }
 }

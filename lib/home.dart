@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
                   return OptionPage();
                 }));
               },
-              bgColor: const Color(0xff2BC16A),
+              bgColor: const Color(0xffF8A942),
               textColor: const Color(0xffe3f1e7),
               buttonname: "Options",
             ),

@@ -11,15 +11,14 @@ class OptionPage extends StatefulWidget {
 class _OptionPageState extends State<OptionPage> {
   static const platform = MethodChannel('com.example.s_game/volume_brightness');
 
-  double _currentVolume = 0.5; // Initial volume (50%)
+  double _currentVolume = 0.5;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentVolume(); // Get the initial volume when the screen loads
+    _getCurrentVolume();
   }
 
-  // Method to get the current volume from the native platform
   Future<void> _getCurrentVolume() async {
     try {
       final double volume = await platform.invokeMethod('getCurrentVolume');
@@ -31,21 +30,19 @@ class _OptionPageState extends State<OptionPage> {
     }
   }
 
-  // Method to increase the volume via the native platform
   Future<void> _increaseVolume() async {
     try {
       await platform.invokeMethod('increaseVolume');
-      _getCurrentVolume(); // Update the volume bar
+      _getCurrentVolume();
     } on PlatformException catch (e) {
       print("Failed to increase volume: '${e.message}'.");
     }
   }
 
-  // Method to decrease the volume via the native platform
   Future<void> _decreaseVolume() async {
     try {
       await platform.invokeMethod('decreaseVolume');
-      _getCurrentVolume(); // Update the volume bar
+      _getCurrentVolume();
     } on PlatformException catch (e) {
       print("Failed to decrease volume: '${e.message}'.");
     }
